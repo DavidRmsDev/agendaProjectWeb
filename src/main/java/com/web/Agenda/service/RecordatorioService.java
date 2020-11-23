@@ -25,11 +25,15 @@ public class RecordatorioService {
         return recordatorioRepository.mostrarRecordatorios(user);
     }
 
-    public void guardar(Recordatorio recordatorio) {
-        try {
-            recordatorioRepository.insertaRecordatorio(recordatorio.getUser().toString(), recordatorio.getTitulo(), recordatorio.getFecha(), recordatorio.getHora(), recordatorio.getDescripcion());
-        } catch (Exception e) {
-        }
+    public int guardar(Recordatorio recordatorio) {
+        recordatorio.setId(null);
+      try{
+      recordatorioRepository.save(recordatorio);
+      return 1;
+      }
+      catch(Exception e){
+          return 2;
+      }
     }
 
     public void modificar(Recordatorio recordatorio) {

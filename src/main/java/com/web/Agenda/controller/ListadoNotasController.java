@@ -3,7 +3,6 @@ package com.web.Agenda.controller;
 import com.web.Agenda.domain.Nota;
 import com.web.Agenda.domain.Usuario;
 import com.web.Agenda.service.NotaService;
-import com.web.Agenda.service.UsuarioService;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -18,70 +17,103 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 public class ListadoNotasController {
 
     private final NotaService notaService;
-    private final UsuarioService usuarioService;
-    private int usuarioId;
+    private Usuario usuarioId;
+    private int estado;
 
-    public ListadoNotasController(NotaService notaService, UsuarioService usuarioService) {
+    public ListadoNotasController(NotaService notaService) {
         this.notaService = notaService;
-        this.usuarioService = usuarioService;
     }
 
     @RequestMapping("/Notas")
-    public String listarNotas(Model model, @ModelAttribute("controladorLogin") Usuario usuarioLogin) {
-        if (usuarioLogin.getUser() != null) {
-            this.usuarioId = usuarioLogin.getUser();
-            List<Nota> listaNotas = notaService.mostrarNotas(usuarioId);
+    public String listarNotas(Model model, @ModelAttribute("UsuarioLoged") Usuario userLoged) {
+        int estados = estado;
+        estado = 0;
+        if (userLoged.getUser() != null) {
+            this.usuarioId = userLoged;
+            List<Nota> listaNotas = notaService.mostrarNotas(usuarioId.getUser());
             Nota nota = new Nota();
-            model.addAttribute("usuario", usuarioId);
+            model.addAttribute("usuario", usuarioId.getUser());
             model.addAttribute("nota", nota);
             model.addAttribute("listaNotas", listaNotas);
+            model.addAttribute("estado", estados);
             return "crudNotas";
         }
         return "redirect:/";
     }
 
+    @RequestMapping("/Notas/NavBarContactos")
+    public String loadContactos(RedirectAttributes redirectAttributes) {
+        if (usuarioId != null) {
+            redirectAttributes.addFlashAttribute("UsuarioLoged", usuarioId);
+            return "redirect:/Contactos";
+        }
+        return "redirect:/";
+    }
+
+    @RequestMapping("/Notas/NavBarNotas")
+    public String loadNotas(RedirectAttributes redirectAttributes) {
+        if (usuarioId != null) {
+            redirectAttributes.addFlashAttribute("UsuarioLoged", usuarioId);
+            return "redirect:/Notas";
+        }
+        return "redirect:/";
+    }
+
+    @RequestMapping("/Notas/NavBarRecordatorios")
+    public String loadRecordatorios(RedirectAttributes redirectAttributes) {
+        if (usuarioId != null) {
+            redirectAttributes.addFlashAttribute("UsuarioLoged", usuarioId);
+            return "redirect:/Recordatorios";
+        }
+        return "redirect:/";
+    }
+
     @PostMapping(value = "/Notas/saveNota", params = "botoncillo=create")
-    public String guardar(@ModelAttribute Nota nota, RedirectAttributes redi) {
-        if (usuarioId != 0) {
-            redi.addFlashAttribute("controladorLogin", usuarioService.devolverUsuario(usuarioId));
+    public String guardar(@ModelAttribute Nota nota, RedirectAttributes redirectAttributes) {
+        if (usuarioId != null) {
             if (nota != null) {
-                nota.setUser(usuarioId);
+                nota.setUser(usuarioId.getUser());
                 String fecha = crearFecha();
                 nota.setFecha(fecha);
-                notaService.guardar(nota);
-                System.out.println("Nota guardada");
+                estado = notaService.guardar(nota);
             }
+            redirectAttributes.addFlashAttribute("UsuarioLoged", usuarioId);
             return "redirect:/Notas";
         }
         return "redirect:/";
     }
 
     @PostMapping(value = "/Notas/saveNota", params = "botoncillo=modify")
-    public String modificar(@ModelAttribute Nota nota, RedirectAttributes redi) {
-        if (usuarioId != 0) {
-            redi.addFlashAttribute("controladorLogin", usuarioService.devolverUsuario(usuarioId));
+    public String modificar(@ModelAttribute Nota nota, RedirectAttributes redirectAttributes) {
+        if (usuarioId != null) {
             if (nota != null) {
-                nota.setUser(usuarioId);
+                nota.setUser(usuarioId.getUser());
                 String fecha = crearFecha();
                 nota.setFecha(fecha);
                 notaService.modificar(nota);
-                System.out.println("Nota modificada");
+                estado = 3;
             }
+            redirectAttributes.addFlashAttribute("UsuarioLoged", usuarioId);
             return "redirect:/Notas";
         }
         return "redirect:/";
     }
 
     @PostMapping(value = "/Notas/saveNota", params = "botoncillo=delete")
-    public String eliminar(@ModelAttribute Nota nota, RedirectAttributes redi) {
-        if (usuarioId != 0) {
-            redi.addFlashAttribute("controladorLogin", usuarioService.devolverUsuario(usuarioId));
+    public String eliminar(@ModelAttribute Nota nota, RedirectAttributes redirectAttributes) {
+        if (usuarioId != null) {
             if (nota != null) {
                 notaService.eliminar(nota);
-                System.out.println("Nota eliminada");
+                estado = 4;
             }
+            redirectAttributes.addFlashAttribute("UsuarioLoged", usuarioId);
             return "redirect:/Notas";
         }
+        return "redirect:/";
+    }
+
+    @RequestMapping(value = "/Notas/saveNota")
+    public String eliminar() {
         return "redirect:/";
     }
 

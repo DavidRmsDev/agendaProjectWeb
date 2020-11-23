@@ -3,7 +3,6 @@ package com.web.Agenda.controller;
 import com.web.Agenda.domain.Contacto;
 import com.web.Agenda.domain.Usuario;
 import com.web.Agenda.service.ContactoService;
-import com.web.Agenda.service.UsuarioService;
 import java.util.List;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -16,65 +15,101 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 public class ListadoContactosController {
 
     private final ContactoService contactoService;
-    private final UsuarioService usuarioService;
-    private int usuarioId;
+    private Usuario usuarioId;
+    private int estado;
 
-    public ListadoContactosController(ContactoService contactoService, UsuarioService usuarioService) {
+    public ListadoContactosController(ContactoService contactoService) {
         this.contactoService = contactoService;
-        this.usuarioService = usuarioService;
     }
 
     @RequestMapping("/Contactos")
-    public String listarContactos(Model model, @ModelAttribute("controladorLogin") Usuario usuarioLogin) {
-        if (usuarioLogin.getUser() != null) {
-            this.usuarioId = usuarioLogin.getUser();
+    public String listarContactos(Model model, @ModelAttribute("UsuarioLoged") Usuario userLoged) {
+        int estados = estado;
+        estado = 0;
+        if (userLoged.getUser() != null) {
+            this.usuarioId = userLoged;
             Contacto contacto = new Contacto();
-            List<Contacto> contact = contactoService.mostrarContactos(usuarioId);
+            List<Contacto> contact = contactoService.mostrarContactos(usuarioId.getUser());
             model.addAttribute("usuario", usuarioId);
             model.addAttribute("contacto", contacto);
             model.addAttribute("contactos", contact);
+            model.addAttribute("estado", estados);
             return "crudContactos";
         }
         return "redirect:/";
     }
 
-    @PostMapping(value = "/Contactos/Acciones", params = "botoncillo=create")
-    public String guardar(@ModelAttribute Contacto contacto, Model model, RedirectAttributes redi) {
-        if (usuarioId != 0) {
-            redi.addFlashAttribute("controladorLogin", usuarioService.devolverUsuario(usuarioId));
-            if (contacto != null) {
-                contacto.setUser(usuarioId);
-                contactoService.guardar(contacto);
-                System.out.println("Contacto guardado");
-            }
+    @RequestMapping("/Contactos/NavBarContactos")
+    public String loadContactos(RedirectAttributes redirectAttributes) {
+        if (usuarioId != null) {
+            redirectAttributes.addFlashAttribute("UsuarioLoged", usuarioId);
             return "redirect:/Contactos";
         }
         return "redirect:/";
     }
 
-    @PostMapping(value = "/Contactos/Acciones", params = "botoncillo=modify")
-    public String modificar(@ModelAttribute Contacto contacto, RedirectAttributes redi) {
-        if (usuarioId != 0) {
-            redi.addFlashAttribute("controladorLogin", usuarioService.devolverUsuario(usuarioId));
+    @RequestMapping("/Contactos/NavBarNotas")
+    public String loadNotas(RedirectAttributes redirectAttributes) {
+        if (usuarioId != null) {
+            redirectAttributes.addFlashAttribute("UsuarioLoged", usuarioId);
+            return "redirect:/Notas";
+        }
+        return "redirect:/";
+    }
+
+    @RequestMapping("/Contactos/NavBarRecordatorios")
+    public String loadRecordatorios(RedirectAttributes redirectAttributes) {
+        if (usuarioId != null) {
+            redirectAttributes.addFlashAttribute("UsuarioLoged", usuarioId);
+            return "redirect:/Recordatorios";
+        }
+        return "redirect:/";
+    }
+
+    @PostMapping(value = "/Contactos/saveContacto", params = "botoncillo=create")
+    public String guardar(@ModelAttribute Contacto contacto, Model model, RedirectAttributes redirectAttributes) {
+        if (usuarioId != null) {
             if (contacto != null) {
-                contacto.setUser(usuarioId);
-                contactoService.modificar(contacto);
-                System.out.println("Contacto modificado");
+                contacto.setUser(usuarioId.getUser());
+                estado = contactoService.guardar(contacto);
             }
+            redirectAttributes.addFlashAttribute("UsuarioLoged", usuarioId);
             return "redirect:/Contactos";
         }
         return "redirect:/";
     }
 
-    @PostMapping(value = "/Contactos/Acciones", params = "botoncillo=delete")
-    public String eliminar(@ModelAttribute Contacto contacto, RedirectAttributes redi) {
-        if (usuarioId != 0) {
-        redi.addFlashAttribute("controladorLogin", usuarioService.devolverUsuario(usuarioId));
-        if (contacto != null) {
-            contactoService.eliminar(contacto);
-            System.out.println("Contacto eliminado");
+    @RequestMapping(value = "/Contactos/saveContacto")
+    public String guardar() {
+        return "redirect:/";
+    }
+
+    @PostMapping(value = "/Contactos/saveContacto", params = "botoncillo=modify")
+    public String modificar(@ModelAttribute Contacto contacto, Model model, RedirectAttributes redirectAttributes) {
+        if (usuarioId != null) {
+            if (contacto != null) {
+                contacto.setUser(usuarioId.getUser());
+                if (contactoService.modificar(contacto) == 1) {
+                    estado = 3;
+                } else {
+                    estado = 4;
+                }
+            }
+            redirectAttributes.addFlashAttribute("UsuarioLoged", usuarioId);
+            return "redirect:/Contactos";
         }
-        return "redirect:/Contactos";
+        return "redirect:/";
+    }
+
+    @PostMapping(value = "/Contactos/saveContacto", params = "botoncillo=delete")
+    public String eliminar(@ModelAttribute Contacto contacto, Model model, RedirectAttributes redirectAttributes) {
+        if (usuarioId != null) {
+            if (contacto != null) {
+                contactoService.eliminar(contacto);
+                estado = 5;
+            }
+            redirectAttributes.addFlashAttribute("UsuarioLoged", usuarioId);
+            return "redirect:/Contactos";
         }
         return "redirect:/";
     }

@@ -25,15 +25,25 @@ public class ContactoService {
         return contactoRepository.mostrarContactos(user);
     }
 
-   public void guardar(Contacto contacto) {
-        try {
-            contactoRepository.insertaContacto(contacto.getUser().toString(), contacto.getNombre(), contacto.getApellidos(),contacto.getTelefono(), contacto.getDireccion(),contacto.getEmail());
-        } catch (Exception e) {
-        }
+   public int guardar(Contacto contacto) {
+      contacto.setId(null);
+      try{
+      contactoRepository.save(contacto);
+      return 1;
+      }
+      catch(Exception e){
+          return 2;
+      }
     }
 
-    public void modificar(Contacto contacto) {
-        contactoRepository.save(contacto);
+    public int modificar(Contacto contacto) {
+         try{
+      contactoRepository.save(contacto);
+      return 1;
+      }
+      catch(Exception e){
+          return 2;
+      }
     }
 
     public void eliminar(Contacto contacto) {

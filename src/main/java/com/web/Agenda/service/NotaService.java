@@ -25,11 +25,15 @@ public class NotaService {
         return notaRepository.mostrarNotas(user);
     }
 
-    public void guardar(Nota nota) {
-        try {
-            notaRepository.insertaNota(nota.getUser().toString(), nota.getTitulo(), nota.getNotas(), nota.getFecha());
-        } catch (Exception e) {
-        }
+    public int guardar(Nota nota) {
+        nota.setId(null);
+      try{
+      notaRepository.save(nota);
+      return 1;
+      }
+      catch(Exception e){
+          return 2;
+      }
     }
 
     public void modificar(Nota nota) {

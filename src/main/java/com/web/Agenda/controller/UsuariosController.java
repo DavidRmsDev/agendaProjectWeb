@@ -21,18 +21,20 @@ public class UsuariosController {
 
     @RequestMapping("/")
     public String loadInicio(Model model) {
+        int casos = caso;
+        caso = 0;
         Usuario usuario = new Usuario();
         model.addAttribute("user", usuario);
-        model.addAttribute("caso", caso);
+        model.addAttribute("caso", casos);
         return "index";
     }
 
     @PostMapping(value = "/inicio", params = "botoncillo=inicio")
-    public String login(@ModelAttribute Usuario usuario, Model model,RedirectAttributes redi) {
+    public String login(@ModelAttribute Usuario usuario, Model model, RedirectAttributes redirectAttributes) {
         caso = logeo(usuario);
         model.addAttribute("caso", caso);
         if (caso == 5) {
-            redi.addFlashAttribute("controladorLogin",usuarioService.comprobarUsuario(usuario));
+            redirectAttributes.addFlashAttribute("UsuarioLoged", usuarioService.comprobarUsuario(usuario));
             return "redirect:/Contactos";
         } else {
             return "redirect:/";
@@ -49,8 +51,12 @@ public class UsuariosController {
         return "redirect:/";
     }
 
+    @RequestMapping(value = "/inicio")
+    public String register() {
+        return "redirect:/";
+    }
+
     public int logeo(Usuario usuario) {
-        int caso = 0;
         if (usuarioService.comprobarUsuario(usuario) != null) {
             if (usuarioService.comprobarUsuarioYContrasenia(usuario) == null) {
                 caso = 2;

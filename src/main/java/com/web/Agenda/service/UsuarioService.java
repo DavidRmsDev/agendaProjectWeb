@@ -24,10 +24,6 @@ public class UsuarioService {
         return usuarioRepository.findByNickname(usuario.getNickname());
     }
     
-    public Usuario devolverUsuario(int usuario) {
-        return usuarioRepository.findByUser(usuario);
-    }
-    
     public Usuario comprobarUsuarioYContrasenia(Usuario usuario) {
         return usuarioRepository.findByNicknameAndPassword(usuario.getNickname(),usuario.getPassword());
     }
@@ -35,13 +31,4 @@ public class UsuarioService {
     public void guardar(Usuario usuario) {
         usuarioRepository.save(usuario);
     }
-/*
-    public void modificar(Usuario usuario) {
-      usuarioRepository.save(usuario);
-    }
-
-    public void eliminar(Usuario usuario) {
-        usuarioRepository.delete(usuario);
-    }
-*/
 }
