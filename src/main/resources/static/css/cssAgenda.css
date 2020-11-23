@@ -1,0 +1,49 @@
+body{
+    background-image: url("/img/fondoPapel.jpg");
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-attachment: fixed;
+    
+}
+
+.navbar{
+    width: 100%;
+}
+
+#formulario{
+    text-align: center;
+    width: 640px;
+    margin: 0 auto;
+    margin-top: 4em;
+}
+h1{
+    text-align: center;
+    font-size: 6em;
+    color: red;
+    font-weight: bold;
+}
+button{
+    width: 150px;
+    text-align: center;
+    margin: 10px;
+}
+#tabla{
+    width: 80%;
+    margin: 5em auto;
+    text-align:  center;
+}
+label{
+    width: 80px;
+    float:left;
+    margin-right: 2em;
+}
+.form-control{
+    width: 450px;;
+    float:left;
+}
+.form-group{
+    padding-bottom: 2em;
+}
+#imagen{
+    margin-bottom: 5em;
+}

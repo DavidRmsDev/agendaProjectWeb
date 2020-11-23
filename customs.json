@@ -1,0 +1,20 @@
+{
+    "elements": {},
+    "attributes": {
+        "th:text": {},
+        "minlength": {},
+        "th:object": {},
+        "th:onclick": {},
+        "th:action": {},
+        "loading": {},
+        "th:each": {},
+        "th:field": {},
+        "th:placeholder": {},
+        "integrity": {},
+        "default": {},
+        "twelvehour": {},
+        "th:href": {},
+        "th:value": {},
+        "th:attr": {}
+    }
+}
