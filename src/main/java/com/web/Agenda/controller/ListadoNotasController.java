@@ -6,6 +6,8 @@ import com.web.Agenda.service.NotaService;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
+import java.util.TimeZone;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -118,7 +120,8 @@ public class ListadoNotasController {
     }
 
     public String crearFecha() {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("EEEE d MMMM HH:mm:ss yyyy");
+        SimpleDateFormat dateFormat = new SimpleDateFormat("EEEE d MMMM HH:mm:ss yyyy",Locale.forLanguageTag("es-ES"));
+        dateFormat.setTimeZone(TimeZone.getTimeZone("Europe/Madrid"));
         return dateFormat.format(new Date());
     }
 

@@ -87,7 +87,7 @@
                         <label for="titulo">Título:</label>
                         <input type="text" class="form-control" id="tituloid" th:field="*{titulo}" onkeyup="resetear()" maxlength="15" required="required">
                     </div>
-                    <div class="form-group">
+                    <div class="form-group" id="campoFecha" style="display:none">
                         <label for="fecha">Fecha:</label>
                         <input type="text" class="form-control" id="fechaid" th:field="*{fecha}" readonly="readonly">
                     </div>
